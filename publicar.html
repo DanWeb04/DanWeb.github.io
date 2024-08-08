@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Publicación</title>
+    <script src="https://unpkg.com/parse/dist/parse.min.js"></script>
+    <script>
+        // Configuración de Parse
+        Parse.initialize("o6WlBXipsu5dlmzCJcE4afEQggfvkazAFLBPLyP3", "wbDtiWYOgeaJ0NnUNvFb1IuskcEtDIbBuHthO8mA");
+        Parse.serverURL = "https://parseapi.back4app.com";
+        
+        // Función para crear una publicación
+        async function createPost() {
+            const Post = Parse.Object.extend("Post");
+            const post = new Post();
+
+            const fileInput = document.getElementById("post-media");
+            const file = fileInput.files[0];
+            const name = file.name;
+
+            const parseFile = new Parse.File(name, file);
+
+            post.set("caption", document.getElementById("post-caption").value);
+            post.set("media", parseFile);
+            post.set("price", parseFloat(document.getElementById("post-price").value));
+            post.set("phoneNumber", document.getElementById("post-phone").value);
+            post.set("user", Parse.User.current()); // Asociar la publicación con el usuario actual
+
+            try {
+                await post.save();
+                alert('Publicación creada exitosamente!');
+                document.getElementById("post-caption").value = "";
+                document.getElementById("post-media").value = "";
+                document.getElementById("post-price").value = "";
+                document.getElementById("post-phone").value = "";
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Publicar Producto</h1>
+
+    <h2>Crear Publicación</h2>
+    <form id="post-form" onsubmit="createPost(); return false;">
+        <input type="text" id="post-caption" placeholder="Descripción" required>
+        <input type="file" id="post-media" required>
+        <input type="number" id="post-price" placeholder="Precio" required>
+        <input type="text" id="post-phone" placeholder="Número de Teléfono" required>
+        <button type="submit">Publicar</button>
+    </form>
+</body>
+</html>
